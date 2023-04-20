@@ -1,0 +1,225 @@
+{
+
+    "name": "ObanaihashiraBot",
+
+    "description": "Gojo is a Telegram Group management bot made using Pyrogram and Python, which makes it modern and faster than most of the Telegram chat managers.",
+
+    "logo" : "https://telegra.ph/file/1ddfe59beac199f4da95b.jpg" ,
+
+    "keywords": [
+
+      "telegram bot",
+
+      "group bot",
+
+      "group",
+
+      "manager",
+
+      "Obanai",
+
+      "Anime"
+
+    ],
+
+    "repository": "https://github.com/kokushibo17/Obanai",
+
+    "success_url": "https://t.me/ObanaihashiraBot",
+
+    "env": {
+
+      "BOT_TOKEN": {
+
+        "description": "Your telegram bot token, get from @Botfather in telegram.",
+
+        "required": true,
+
+        "value": ""
+
+      },
+
+      "API_ID": {
+
+        "description": "Get API_ID from my.telegram.org, used for pyrogram base.",
+
+        "required": true,
+
+        "value": ""
+
+      },
+
+      "API_HASH": {
+
+        "description": "Get API_HASH from my.telegram.org, used for pyrogram base.",
+
+        "required": true,
+
+        "value": ""
+
+      },
+
+      "DB_URI": {
+
+        "description": "Your MongoDB connection string.",
+
+        "required": true,
+
+        "value": ""
+
+      },
+
+      "DB_NAME": {
+
+        "description": "Your MongoDB database name.",
+
+        "required": true,
+
+        "value": ""
+
+      },
+
+      "OWNER_ID": {
+
+        "description": "Your user ID as an integer.",
+
+        "required": true,
+
+        "value": "1344569458"
+
+      },
+
+      "SUPPORT_GROUP": {
+
+        "description": "Your Telegram support group chat username where user's can contact in case of a problem..",
+
+        "required": true,
+
+        "value": "obanaisupport"
+
+      },
+
+      "MESSAGE_DUMP": {
+
+        "description": "Event logs channel where bot will send updates.",
+
+        "required": true,
+
+        "value": "-1001958459072"
+
+      },
+
+      "VERSION": {
+
+        "description": "A Version to be shown in bot.",
+
+        "required": false,
+
+        "value": "Stable"
+
+      },
+
+      "PREFIX_HANDLER": {
+
+        "description": "Something like '/' to execute commands...Don't give comma or anything after 1 handler just give and space then enter second hand;ler",
+
+        "required": true,
+
+        "value": "/ ! $"
+
+      },
+
+      "DEV_USERS": {
+
+        "description": "ID of users who are Devs of your bot. Use space to seprate values",
+
+        "required": false,
+
+        "value": " "
+
+      },
+
+      "SUPPORT_CHANNEL": {
+
+        "description": "Channel where bot uodates will be posted!",
+
+        "value": "obanaichannel"
+
+      },
+
+      "SUDO_USERS": {
+
+        "description": "A space separated list of user IDs who you want to assign as sudo users.",
+
+        "required": false,
+
+        "value": " "
+
+      },
+
+      "WHITELIST_USERS": {
+
+        "description": "A space separated list of user IDs whitelisted, cannot be restricted.",
+
+        "required": false,
+
+        "value": " "
+
+      },
+
+      "GENIUS_API" : {
+
+        "description": "Your Lyrics Genius Api Token. To fetch lyrics of songs",
+
+        "required": false,
+
+        "value": ""
+
+      },
+
+      "WORKERS": {
+
+        "description": "Number of workers to run the bot.",
+
+        "required": false,
+
+        "value": "8"
+
+      },
+
+      "ENV": {
+
+        "description": "Setting this to ANYTHING will enable environment variables. Leave it as it is",
+
+        "required": true,
+
+        "value": "ANYTHING"
+
+      }
+
+    },
+
+    "buildpacks": [
+
+      {
+
+        "url": "heroku/python"
+
+      }
+
+    ],
+
+    "formation": {
+
+      "worker": {
+
+        "quantity": 1,
+
+        "size": "free"
+
+      }
+
+    }
+
+  }
+
+  
