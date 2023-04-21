@@ -8,7 +8,7 @@ from pyrogram.types import CallbackQuery, Message
 
 from Powers import LOGGER
 
-from Powers.bot_class import Gojo
+from Powers.bot_class import Obanai
 
 from Powers.database.blacklist_db import Blacklist
 
@@ -332,7 +332,7 @@ async def rm_allbl_callback(_, q: CallbackQuery):
 
     return
 
-__PLUGIN__ = "blacklist"
+__PLUGIN__ = "madarchotblacklist"
 
 __alt_name__ = ["blacklists", "blaction"]
 
