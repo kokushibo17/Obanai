@@ -26,4 +26,4 @@ if '%errorlevel%' NEQ '0' (
 :--------------------------------------
 :: your commands begin from this point.
 :: stops the service and then starts it
-nssm restart @ObanaihashiraBot
+nssm restart ObanaihashiraBot
