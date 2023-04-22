@@ -8,8 +8,8 @@ if os.path.exists("local.env"):
 load_dotenv()
 class Config(object):
     log = True
-    APP_ID = getenv("API_ID", "")
-    API_HASH = getenv("API_HASH", "")
+    APP_ID = getenv("API_ID", "20845525")
+    API_HASH = getenv("API_HASH", "0050453e7ad58679e823fa5767117ff7")
     TOKEN = getenv("TOKEN", "")
     OWNER_ID = getenv("OWNER_ID", "5651494403")
     ASSISTANT_ID = getenv("ASSISTANT_ID", "5968775445")
