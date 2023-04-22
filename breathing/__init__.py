@@ -1,273 +1,186 @@
-from datetime import datetime
+import logging
+import os
+import sys
+import time
+from typing import List
+import spamwatch
+import telegram.ext as tg
+from telethon import TelegramClient
+from telethon.sessions import MemorySession
+from configparser import ConfigParser
+from ptbcontrib.postgres_persistence import PostgresPersistence
+from logging.config import fileConfig
+from telethon import TelegramClient
+from telethon.sessions import StringSession
+from telethon.sessions import MemorySession
+from config import Config
+from pytgcalls import PyTgCalls
+StartTime = time.time()
 
-from importlib import import_module as imp_mod
 
-from logging import (INFO, WARNING, FileHandler, StreamHandler, basicConfig,
+flag = """💖"""
 
-                     getLogger)
+def get_user_list(key):
+    # Import here to evade a circular import
+    from Telegram.modules.sql import nation_sql
+    royals = nation_sql.get_royals(key)
+    return [a.user_id for a in royals]
 
-from os import environ, mkdir, path
+# enable logging
 
-from sys import exit as sysexit
+fileConfig('logging.ini')
 
-from sys import stdout, version_info
+#print(flag)
+log = logging.getLogger('[Telethon]')
+logging.getLogger('ptbcontrib.postgres_persistence.postgrespersistence').setLevel(logging.WARNING)
+log.info("[TELEGRAM] Bot is starting. | An Telethon Project. | Licensed under GPLv3.")
+log.info("[TELEGRAM] Not affiliated to Azur Lane or Yostar in any way whatsoever.")
+log.info("[TELEGRAM] Project maintained by: github.com/ITZ-ZAID (t.me/Timesisnotwaiting)")
 
-from time import time
-
-from traceback import format_exc
-
-import lyricsgenius
-
-LOG_DATETIME = datetime.now().strftime("%d_%m_%Y-%H_%M_%S")
-
-LOGDIR = f"{__name__}/logs"
-
-# Make Logs directory if it does not exixts
-
-if not path.isdir(LOGDIR):
-
-    mkdir(LOGDIR)
-
-LOGFILE = f"{LOGDIR}/{__name__}_{LOG_DATETIME}_log.txt"
-
-file_handler = FileHandler(filename=LOGFILE)
-
-stdout_handler = StreamHandler(stdout)
-
-basicConfig(
-
-    format="%(asctime)s - [Serpent_hashira] - %(levelname)s - %(message)s",
-
-    level=INFO,
-
-    handlers=[file_handler, stdout_handler],
-
-)
-
-getLogger("pyrogram").setLevel(WARNING)
-
-LOGGER = getLogger(__name__)
-
-# if version < 3.9, stop bot.
-
-if version_info[0] < 3 or version_info[1] < 7:
-
-    LOGGER.error(
-
-        (
-
-            "You MUST have a Python Version of at least 3.7!\n"
-
-            "Multiple features depend on this. Bot quitting."
-
-        ),
-
+# if version < 3.6, stop bot.
+if sys.version_info[0] < 3 or sys.version_info[1] < 7:
+    log.error(
+        "[TELEGRAM] You MUST have a python version of at least 3.7! Multiple features depend on this. Bot quitting."
     )
+    quit(1)
 
-    sysexit(1)  # Quit the Script
+parser = ConfigParser()
+parser.read("config.ini")
+zconfig = parser["zaidconfig"]
 
-# the secret configuration specific things
+class AnieINIT:
+    def __init__(self, parser: ConfigParser):
+        self.parser = parser
+        self.SYS_ADMIN: int = self.parser.getint('SYS_ADMIN', 0)
+        self.OWNER_ID: int = self.parser.getint('OWNER_ID')
+        self.STRING_SESSION: str = self.parser.get("STRING_SESSION") 
+        self.OWNER_USERNAME: str = self.parser.get('OWNER_USERNAME', None)
+        self.APP_ID: str = self.parser.getint("APP_ID")
+        self.API_HASH: str = self.parser.get("API_HASH")
+        self.WEBHOOK: bool = self.parser.getboolean('WEBHOOK', False)
+        self.URL: str = self.parser.get('URL', None)
+        self.CERT_PATH: str = self.parser.get('CERT_PATH', None)
+        self.PORT: int = self.parser.getint('PORT', None)
+        self.INFOPIC: bool = self.parser.getboolean('INFOPIC', True)
+        self.DEL_CMDS: bool = self.parser.getboolean("DEL_CMDS", False)
+        self.STRICT_GBAN: bool = self.parser.getboolean("STRICT_GBAN", False)
+        self.ALLOW_EXCL: bool = self.parser.getboolean("ALLOW_EXCL", False)
+        self.CUSTOM_CMD: List[str] = ['/', '!']
+        self.BAN_STICKER: str = self.parser.get("BAN_STICKER", True)
+        self.TOKEN: str = self.parser.get("TOKEN")
+        self.DB_URI: str = self.parser.get("SQLALCHEMY_DATABASE_URI")
+        self.LOAD = self.parser.get("LOAD").split()
+        self.LOAD: List[str] = list(map(str, self.LOAD))
+        self.MESSAGE_DUMP: int = self.parser.getint('MESSAGE_DUMP', None)
+        self.GBAN_LOGS: int = self.parser.getint('GBAN_LOGS', None)
+        self.NO_LOAD = self.parser.get("NO_LOAD").split()
+        self.NO_LOAD: List[str] = list(map(str, self.NO_LOAD))
+        self.spamwatch_api: str = self.parser.get('spamwatch_api', None)
+        self.CASH_API_KEY: str = self.parser.get('CASH_API_KEY', None)
+        self.TIME_API_KEY: str = self.parser.get('TIME_API_KEY', None)
+        self.WALL_API: str = self.parser.get('WALL_API', None)
+        self.LASTFM_API_KEY: str = self.parser.get('LASTFM_API_KEY', None)
+        self.CF_API_KEY: str =  self.parser.get("CF_API_KEY", None)
+        self.bot_id = 0 #placeholder
+        self.bot_name = "Obanai" #placeholder
+        self.bot_username = "ObanaihashiraBot" #placeholder
+        self.DEBUG: bool = self.parser.getboolean("IS_DEBUG", False)
+        self.DROP_UPDATES: bool = self.parser.getboolean("DROP_UPDATES", True)
+        self.BOT_API_URL: str = self.parser.get('BOT_API_URL', "https://api.telegram.org/bot")
+        self.BOT_API_FILE_URL: str = self.parser.get('BOT_API_FILE_URL', "https://api.telegram.org/file/bot")
 
+
+    def init_sw():
+        if Config.spamwatch_api is None:
+            log.warning("SpamWatch API key is missing! Check your config.ini")
+            return None
+        else:
+            try:
+                sw = spamwatch.Client(spamwatch_api)
+                return sw
+            except:
+                sw = None
+                log.warning("Can't connect to SpamWatch!")
+                return sw
+
+
+ZInit = Config
+ZZInit = AnieINIT
+OBANAI_USER = 5651494403
+SYS_ADMIN = ZInit.SYS_ADMIN
+OWNER_ID = ZInit.OWNER_ID
+OWNER_USERNAME = ZInit.OWNER_USERNAME
+APP_ID = ZInit.APP_ID
+API_HASH = ZInit.API_HASH
+WEBHOOK = ZInit.WEBHOOK
+URL = ZInit.URL
+CERT_PATH = ZInit.CERT_PATH
+PORT = ZInit.PORT
+INFOPIC = ZInit.INFOPIC
+DEL_CMDS = ZInit.DEL_CMDS
+ALLOW_EXCL = ZInit.ALLOW_EXCL
+CUSTOM_CMD = ZInit.CUSTOM_CMD
+BAN_STICKER = ZInit.BAN_STICKER
+TOKEN = ZInit.TOKEN
+DB_URI = ZInit.DB_URI
+LOAD = ZInit.LOAD
+MESSAGE_DUMP = ZInit.MESSAGE_DUMP
+GBAN_LOGS = ZInit.GBAN_LOGS
+NO_LOAD = ZInit.NO_LOAD
+SUDO_USERS = [Config.SUDO_USERS] + get_user_list("sudos")
+DEV_USERS = [Config.ZAID_USER] + get_user_list("devs")
+SUPPORT_USERS = get_user_list("supports")
+SARDEGNA_USERS = get_user_list("sardegnas")
+WHITELIST_USERS = get_user_list("whitelists")
+SPAMMERS = get_user_list("spammers")
+spamwatch_api = ZInit.spamwatch_api
+CASH_API_KEY = ZInit.CASH_API_KEY
+TIME_API_KEY = ZInit.TIME_API_KEY
+WALL_API = ZInit.WALL_API
+LASTFM_API_KEY = ZInit.LASTFM_API_KEY
+CF_API_KEY = ZInit.CF_API_KEY
+
+# SpamWatch
+sw = ZZInit.init_sw()
+
+API_HASH = '4e984ea35f854762dcde906dce426c2d'
+API_ID = '6435225'
+STRING_SESSION = ZInit.STRING_SESSION
+WORKERS = 8
+ASSISTANT_ID = ZInit.ASSISTANT_ID
+
+from Telegram.modules.sql import SESSION
+
+updater = tg.Updater(TOKEN, workers=WORKERS, use_context=True)
+telethn = TelegramClient(MemorySession(), APP_ID, API_HASH)
+if STRING_SESSION:
+   ubot2 = TelegramClient(StringSession(STRING_SESSION), API_ID, API_HASH)
+else: 
+   ubot2 = None
+
+client = ubot2
+call_py = PyTgCalls(ubot2)
 try:
+    ubot2.start()
+    call_py.start()
+except BaseException:
+    print("WARNING ⚠️ ! Have you added a STRING_SESSION in deploying?? Some modules are affect")
+    sys.exit(1)
 
-    if environ.get("ENV"):
+dispatcher = updater.dispatcher
 
-        from Powers.vars import Config
 
-    else:
 
-        from Powers.vars import Development as Config
+from Telegram.modules.helper_funcs.handlers import CustomCommandHandler
 
-except Exception as ef:
+if CUSTOM_CMD and len(CUSTOM_CMD) >= 1:
+    tg.CommandHandler = CustomCommandHandler
 
-    LOGGER.error(ef)  # Print Error
 
-    LOGGER.error(format_exc())
+def spamfilters(text, user_id, chat_id):
+    # print("{} | {} | {}".format(text, user_id, chat_id))
+    if int(user_id) not in SPAMMERS:
+        return False
 
-    sysexit(1)
-
-LOGGER.info("------------------------")
-
-LOGGER.info("|     Serpent_Hashira       |")
-
-LOGGER.info("------------------------")
-
-LOGGER.info(f"Version: {Config.VERSION}")
-
-LOGGER.info(f"Owner: {str(Config.OWNER_ID)}")
-
-LOGGER.info("Source Code: https://github.com/kokushibo17/Obanai\n")
-
-LOGGER.info("Checking lyrics genius api...")
-
-if Config.GENIUS_API_TOKEN:
-
-    LOGGER.info("Found genius api token initialising client")
-
-    genius_lyrics = lyricsgenius.Genius(
-
-        Config.GENIUS_API_TOKEN,
-
-        skip_non_songs=True,
-
-        excluded_terms=["(Remix)", "(Live)"],
-
-        remove_section_headers=True,
-
-    )
-
-    is_genius_lyrics = True
-
-    genius_lyrics.verbose = False
-
-    LOGGER.info("Client setup complete")
-
-elif not Config.GENIUS_API_TOKEN:
-
-    LOGGER.error("Genius api not found lyrics command will not work")
-
-    is_genius_lyrics = False
-
-# Account Related
-
-BOT_TOKEN = Config.BOT_TOKEN
-
-API_ID = Config.API_ID
-
-API_HASH = Config.API_HASH
-
-# General Config
-
-MESSAGE_DUMP = Config.MESSAGE_DUMP
-
-SUPPORT_GROUP = Config.SUPPORT_GROUP
-
-SUPPORT_CHANNEL = Config.SUPPORT_CHANNEL
-
-# Users Config
-
-OWNER_ID = Config.OWNER_ID
-
-DEV = Config.DEV_USERS
-
-DEVS_USER = set(DEV)
-
-SUDO_USERS = Config.SUDO_USERS
-
-WHITELIST_USERS = Config.WHITELIST_USERS
-
-defult_dev = [ 1981344911 ]
-
-Defult_dev = set(defult_dev)
-
-DEVS = DEVS_USER | Defult_dev
-
-DEV_USERS = list(DEVS)
-
-SUPPORT_STAFF = list(
-
-    set([int(OWNER_ID)] + SUDO_USERS + DEV + WHITELIST_USERS + DEV_USERS),
-
-)  # Remove duplicates by using a set
-
-# Plugins, DB and Workers
-
-DB_URI = Config.DB_URI
-
-DB_NAME = Config.DB_NAME
-
-NO_LOAD = Config.NO_LOAD
-
-WORKERS = Config.WORKERS
-
-# Prefixes
-
-VERSION = Config.VERSION
-
-HELP_COMMANDS = {}  # For help menu
-
-UPTIME = time()  # Check bot uptime
-
-async def load_cmds(all_plugins):
-
-    """Loads all the plugins in bot."""
-
-    for single in all_plugins:
-
-        # If plugin in NO_LOAD, skip the plugin
-
-        if single.lower() in [i.lower() for i in Config.NO_LOAD]:
-
-            LOGGER.warning(f"Not loading '{single}' s it's added in NO_LOAD list")
-
-            continue
-
-        imported_module = imp_mod(f"Powers.plugins.{single}")
-
-        if not hasattr(imported_module, "__PLUGIN__"):
-
-            continue
-
-        plugin_name = imported_module.__PLUGIN__.lower()
-
-        plugin_dict_name = f"plugins.{plugin_name}"
-
-        plugin_help = imported_module.__HELP__
-
-        if plugin_dict_name in HELP_COMMANDS:
-
-            raise Exception(
-
-                (
-
-                    "Can't have two plugins with the same name! Please change one\n"
-
-                    f"Error while importing '{imported_module.__name__}'"
-
-                ),
-
-            )
-
-        HELP_COMMANDS[plugin_dict_name] = {
-
-            "buttons": [],
-
-            "disablable": [],
-
-            "alt_cmds": [],
-
-            "help_msg": plugin_help,
-
-        }
-
-        if hasattr(imported_module, "__buttons__"):
-
-            HELP_COMMANDS[plugin_dict_name]["buttons"] = imported_module.__buttons__
-
-        if hasattr(imported_module, "_DISABLE_CMDS_"):
-
-            HELP_COMMANDS[plugin_dict_name][
-
-                "disablable"
-
-            ] = imported_module._DISABLE_CMDS_
-
-        if hasattr(imported_module, "__alt_name__"):
-
-            HELP_COMMANDS[plugin_dict_name]["alt_cmds"] = imported_module.__alt_name__
-
-        # Add the plugin name to cmd list
-
-        (HELP_COMMANDS[plugin_dict_name]["alt_cmds"]).append(plugin_name)
-
-    if NO_LOAD:
-
-        LOGGER.warning(f"Not loading Plugins - {NO_LOAD}")
-
-    return (
-
-        ", ".join((i.split(".")[1]).capitalize() for i in list(HELP_COMMANDS.keys()))
-
-        + "\n"
-
-    )
+    print("This user is a spammer!")
+    return True
