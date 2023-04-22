@@ -32,7 +32,7 @@ stsearch = StackSearch()
 
 @Obanai.on_message(command('google'))
 
-async def g_search(c: Gojo, m: Message):
+async def g_search(c: Obanai, m: Message):
 
     split = m.text.split(None, 1)
 
