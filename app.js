@@ -1,8 +1,8 @@
 {
 
-    "name": "ObanaihashiraBot",
+    "name": "Obanai iguru Bot",
 
-    "description": "Gojo is a Telegram Group management bot made using Pyrogram and Python, which makes it modern and faster than most of the Telegram chat managers.",
+    "description": "obanai iguru is a Telegram Group management bot made using Pyrogram and Python, which makes it modern and faster than most of the Telegram chat managers.",
 
     "logo" : "https://telegra.ph/file/1ddfe59beac199f4da95b.jpg" ,
 
