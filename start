@@ -1,0 +1,5 @@
+#!/bin/bash
+    
+git clone $REPO_URL Repo
+cd Repo
+python3 -m Telegram
