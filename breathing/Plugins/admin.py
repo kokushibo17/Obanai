@@ -150,7 +150,7 @@ async def adminlist_show(_, m: Message):
 
     return
 
-@Gojo.on_message(command("zombies") & owner_filter)
+@Obanai.on_message(command("zombies") & owner_filter)
 
 async def zombie_clean(c: Obanai, m: Message):
 
