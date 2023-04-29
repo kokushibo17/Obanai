@@ -20,12 +20,12 @@
 	},
 	    
 	 "ASSISTANT_ID": {
-            "description": "enter I'd of which uh have used to string (Id) Go to @Zaid2_Robot And Type /id..",
+            "description": "enter I'd of which uh have used to string (Id) Go to rose bot And Type /id..",
             "value": ""
         },    
 		
 	"STRING_SESSION": {
-            "description": "fill with the telethon session string from https://replit.com/@Itz-zaid/Generator",
+            "description": "fill with the telethon session string from any sting session generator bot",
             "required": true	
         },
 	    
