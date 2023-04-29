@@ -32,12 +32,12 @@
 	"SUPPORT": {
             "description": "Fill there your group username else leave",
             "required": false,
-            "value": "TheSupportChat"
+            "value": ""
         },
         "CHANNEL": {
             "description": "Fill there your Channel username else leave",
             "required": false,
-            "value": "TheUpdatesChannel"
+            "value": ""
         },
 	    
         "API_ID": {
@@ -104,7 +104,7 @@
         },
 	    
 	"DEV_USERS": {
-            "description": "Dev Access Of Your Bot (Id) Go to @Zaid2_Robot And Type /id..",
+            "description": "Dev Access Of Your Bot (Id) Go to rose-bot And Type /id..",
             "value": ""
 		
 	},
