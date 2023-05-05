@@ -1,0 +1,153 @@
+{
+
+  "name": "Obanai",
+
+  "description": "A Telegram bot for anime and manga fans",
+
+  "repository": "https://github.com/kokushibo17/Obanai",
+
+  "env": {
+
+    "BOT_TOKEN": {
+
+      "description": "The token for your Telegram bot",
+
+      "required": true
+
+    },
+
+    "API_ID": {
+
+      "description": "The API ID for your Telegram bot",
+
+      "required": true
+
+    },
+
+    "API_HASH": {
+
+      "description": "The API hash for your Telegram bot",
+
+      "required": true
+
+    },
+
+    "DB_URI": {
+
+      "description": "The URI for your MongoDB database",
+
+      "required": true
+
+    },
+
+    "DB_NAME": {
+
+      "description": "The name of your MongoDB database",
+
+      "required": true
+
+    },
+
+    "OWNER_ID": {
+
+      "description": "The Telegram user ID of the bot owner",
+
+      "required": true
+
+    },
+
+    "SUPPORT_GROUP": {
+
+      "description": "The Telegram group ID for user support",
+
+      "required": true
+
+    },
+
+    "MESSAGE_DUMP": {
+
+      "description": "The Telegram chat ID for message dumping",
+
+      "required": true
+
+    },
+
+    "PREFIX_HANDLER": {
+
+      "description": "The prefix for your bot's commands",
+
+      "required": true
+
+    },
+
+    "DEV_USERS": {
+
+      "description": "Comma-separated list of Telegram user IDs for developers",
+
+      "required": true
+
+    },
+
+    "SUPPORT_CHANNEL": {
+
+      "description": "The Telegram channel ID for bot updates",
+
+      "required": true
+
+    },
+
+    "SUDO_USERS": {
+
+      "description": "Comma-separated list of Telegram user IDs for sudo users",
+
+      "required": true
+
+    },
+
+    "WHITELIST_USERS": {
+
+      "description": "Comma-separated list of Telegram user IDs for whitelisted users",
+
+      "required": true
+
+    },
+
+    "GENIUS_API": {
+
+      "description": "The API key for the Genius lyrics API",
+
+      "required": true
+
+    },
+
+    "WORKERS": {
+
+      "description": "The number of worker processes to use",
+
+      "required": true
+
+    },
+
+    "ENV": {
+
+      "description": "The environment to run the bot in (prod, dev, test)",
+
+      "required": true
+
+    }
+
+  },
+
+  "stack": "heroku-22",
+
+  "buildpacks": [
+
+    {
+
+      "url": "heroku/python"
+
+    }
+
+  ]
+
+}
