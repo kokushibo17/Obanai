@@ -116,7 +116,7 @@
 
       "description": "The API key for the Genius lyrics API",
 
-      "required": true
+      "required": false
 
     },
 
