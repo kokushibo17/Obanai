@@ -1,31 +1,63 @@
-version: "3.9"
+version: '3.8'
+
 services:
-  worker:
-    build:
+
+  app:
+
+    image: registry.heroku.com/<your-heroku-app-name>/web
+
+    ports:
+
+      - $PORT:5000
+
     environment:
-      APP_ID: $API_ID # defaults to None
-      API_HASH: $API_HASH # defaults to None
-      PREFIX_HANDLER: $PREFIX_HANDLER # defult to ! and /
-      BOT_TOKEN: $BOT_TOKEN # defaults to None
-      OWNER_ID: $OWNER_ID
-      STRING_SESSION: $STRING_SESSION
-      OWNER_USERNAME: $OWNER_USERNAME
-      DB_URI: $DB_URI  # defaults postgres://username:password@postgresdb:5432/database_name
-      MESSAGE_DUMP: $MESSAGE_DUMP # default to -1001713325956
-      GBAN_LOGS: $GBAN_LOGS
-      SYS_ADMIN: $SYS_ADMIN
-      DEV_USERS: $DEV_USERS
-      LOAD: $LOAD
-      BAN_STICKER: $BAN_STICKER
-      CASH_API_KEY: $CASH_API_KEY
-      TIME_API_KEY: $TIME_API_KEY
-      WALL_API: $WALL_API
-      spamwatch_api: $spamwatch_api
-      SPAMMERS: $SPAMMERS
-      LASTFM_API_KEY: $LASTFM_API_KEY
-      CF_API_KEY: $CF_API_KEY
-      BOT_API_URL: $BOT_API_URL
-      BOT_API_FILE_URL: $BOT_API_FILE_URL
-      SUDO_USERS: $SUDO_USERS
-      OBANAI_USER: $OBANAI_USER
+
+      - BOT_TOKEN=${BOT_TOKEN}
+
+      - API_ID=${API_ID}
+
+      - API_HASH=${API_HASH}
+
+      - DB_URI=${DB_URI}
+
+      - DB_NAME=${DB_NAME}
+
+      - OWNER_ID=${OWNER_ID}
+
+      - SUPPORT_GROUP=${SUPPORT_GROUP}
+
+      - MESSAGE_DUMP=${MESSAGE_DUMP}
+
+      - PREFIX_HANDLER=${PREFIX_HANDLER}
+
+      - DEV_USERS=${DEV_USERS}
+
+      - SUPPORT_CHANNEL=${SUPPORT_CHANNEL}
+
+      - SUDO_USERS=${SUDO_USERS}
+
+      - WHITELIST_USERS=${WHITELIST_USERS}
+
+      - GENIUS_API=${GENIUS_API}
+
+      - WORKERS=${WORKERS}
+
+      - ENV=${ENV}
+ 
+
+
+ 
+
+    
+     
+   
+ 
+    
+
+
+
+
+
+
+
 
